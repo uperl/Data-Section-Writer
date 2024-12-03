@@ -48,7 +48,7 @@ package Data::Section::Writer {
   sub add_file ($self, $filename, $content, $encoding=undef) {
     Carp::croak("Unknown encoding $encoding") if defined $encoding && $encoding ne 'base64';
     $self->_files->{"$filename"} = [ $content, $encoding ];
-    $self;
+    return $self;
   }
 
   sub _render_file ($self, $filename, $data) {
@@ -78,6 +78,34 @@ package Data::Section::Writer {
       ''
     );
   }
+
+=head2 update_file
+
+=cut
+
+  sub update_file ($self) {
+    my $perl;
+
+    if(-f $self->perl_filename) {
+      # read the file in, removing __DATA__ and everything after that
+      # if there is no __DATA__ section then leave unchanged.
+      $perl = $self->perl_filename->slurp_utf8 =~ s/(?<=\r?\n)__DATA__.*//sr;
+
+      # Add a new line at the end if it doesn't already exist.
+      $perl .= "\n" unless $perl =~ /\n\z/s;
+
+    } else {
+      $perl = '';
+    }
+
+    # re-write the perl with the 
+    $self->perl_filename->spew_utf8(
+      $perl . $self->render_section,
+    );
+
+    return $self;
+  }
+
 }
 
 1;

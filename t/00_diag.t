@@ -15,6 +15,7 @@ $modules{$_} = $_ for qw(
   Path::Tiny
   Ref::Util
   Test2::V0
+  Test::Differences
 );
 
 
