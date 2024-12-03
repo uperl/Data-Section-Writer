@@ -35,9 +35,9 @@ my $writer = Data::Section::Writer->new(
   perl_filename => $perl_filename,
 );
 
-my $section = "__DATA__\n\n" .
+my $section = "__DATA__\n" .
               "\@\@ bar.bin (base64)\n" .
-              "Rm9vIEJhciBCYXo=\n\n" .
+              "Rm9vIEJhciBCYXo=\n" .
               "\@\@ foo.txt\n" .
               "Foo Bar Baz\n";
 is(
