@@ -20,9 +20,15 @@ Will add this to the bottom of C<foo.pl>
 
 =head1 DESCRIPTION
 
+This class is an interface for updating the C<__DATA__> section of your Perl module or script programmatically
+for it to work with one of the many modules that allows for multiple files in a C<__DATA__> section, such as
+L<Data::Section>, L<Data::Section::Simple> or L<Mojo::Loader>.
+
 =head1 ATTRIBUTES
 
 =head2 perl_filename
+
+The name of the Perl source file.  If not provided then the source for the caller will be used. 
 
 =cut
 
@@ -53,6 +59,12 @@ Will add this to the bottom of C<foo.pl>
 
 =head2 add_file
 
+ $writer->add_file($text_filename, $content);
+ $writer->add_file($binary_filename, $content, 'base64');
+
+Add a file.  Binary files can be encoded using C<base64>.  Such binaries files are
+only supported by L<Mojo::Loader> at the moment.
+
 =cut
 
   sub add_file ($self, $filename, $content, $encoding=undef) {
@@ -76,6 +88,10 @@ Will add this to the bottom of C<foo.pl>
 
 =head2 render_section
 
+ my $perl = $writer->render_section;
+
+Returns the C<__DATA__> section.
+
 =cut
 
   sub render_section ($self) {
@@ -89,6 +105,10 @@ Will add this to the bottom of C<foo.pl>
   }
 
 =head2 update_file
+
+ $writer->update_file;
+
+Update the existing Perl source file, OR create a new Perl source file with just the C<__DATA__> section.
 
 =cut
 
@@ -124,3 +144,12 @@ Will add this to the bottom of C<foo.pl>
 }
 
 1;
+
+=head1 CAVEATS
+
+Added text files will get an added trailing new line if they do not already have
+them.  This is a requirement of the format used by the data section modules.
+
+For binary files (base64 encoded) this isn't relevant.
+
+=cut
