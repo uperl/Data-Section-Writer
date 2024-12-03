@@ -16,6 +16,8 @@ Write \_\_DATA\_\_ section files for Data::Section, Data::Section::Simple or Moj
 
 ## render\_section
 
+## update\_file
+
 # AUTHOR
 
 Graham Ollis <plicease@cpan.org>

@@ -1,5 +1,7 @@
 use Test2::V0 -no_srand => 1;
 use Data::Section::Writer;
+use Test::Builder ();  # required for Test::Differences + Test2 le sigh
+use Test::Differences;
 
 is(
   Data::Section::Writer->new,
@@ -27,8 +29,19 @@ is(
   'upgrade perl_filename',
 );
 
+my $perl_filename = Path::Tiny->tempfile;
+
+my $writer = Data::Section::Writer->new(
+  perl_filename => $perl_filename,
+);
+
+my $section = "__DATA__\n\n" .
+              "\@\@ bar.bin (base64)\n" .
+              "Rm9vIEJhciBCYXo=\n\n" .
+              "\@\@ foo.txt\n" .
+              "Foo Bar Baz\n";
 is(
-  Data::Section::Writer->new,
+  $writer,
   object {
     prop isa => 'Data::Section::Writer';
     call [add_file => 'foo.txt', "Foo Bar Baz"] => object {
@@ -37,15 +50,35 @@ is(
     call [add_file => 'bar.bin', "Foo Bar Baz", 'base64'] => object {
       prop isa => 'Data::Section::Writer';
     };
-    call render_section => "__DATA__\n\n" .
-                           "\@\@ bar.bin (base64)\n" .
-                           "Rm9vIEJhciBCYXo=\n\n" .
-                           "\@\@ foo.txt\n" .
-                           "Foo Bar Baz\n";
+    call render_section => $section;
+
+    call update_file => object {
+      prop isa => 'Data::Section::Writer';
+    };
+
   },
   'add_section_file',
 );
 
+unlink $perl_filename;
+$writer->update_file;
+is($perl_filename->slurp_utf8, $section, 'create new file');
+
+my $program = "print \"hello world\"";
+$perl_filename->spew_utf8("$program\n");
+$writer->update_file;
+eq_or_diff($perl_filename->slurp_utf8, "$program\n$section", 'correctly formed text file');
+
+$perl_filename->spew_utf8("$program");
+$writer->update_file;
+eq_or_diff($perl_filename->slurp_utf8, "$program\n$section", 'missing trailing \n');
+
+$perl_filename->spew_utf8("$program\n__DATA__\nfoo\n");
+$writer->update_file;
+eq_or_diff($perl_filename->slurp_utf8, "$program\n$section", 'replace');
+
+$perl_filename->spew_utf8("$program\n __DATA__\nfoo\n");
+$writer->update_file;
+eq_or_diff($perl_filename->slurp_utf8, "$program\n __DATA__\nfoo\n$section", '__DATA__ at start of line');
+
 done_testing;
-
-
