@@ -8,6 +8,16 @@ package Data::Section::Writer {
 
 =head1 SYNOPSIS
 
+This code:
+
+# EXAMPLE: examples/synopsis.pl
+
+Will add this to the bottom of C<foo.pl>
+
+# EXAMPLE: examples/foo.pl
+
+(binary file truncated for readability)
+
 =head1 DESCRIPTION
 
 =head1 ATTRIBUTES
@@ -86,6 +96,8 @@ package Data::Section::Writer {
     my $perl;
 
     if(-f $self->perl_filename) {
+      $perl = $self->perl_filename->slurp_utf8;
+
       # read the file in, removing __DATA__ and everything after that
       # if there is no __DATA__ section then leave unchanged.
       $perl = $self->perl_filename->slurp_utf8 =~ s/(?<=\n)__DATA__.*//sr;
