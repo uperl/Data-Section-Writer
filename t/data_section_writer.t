@@ -81,4 +81,8 @@ $perl_filename->spew_utf8("$program\n __DATA__\nfoo\n");
 $writer->update_file;
 eq_or_diff($perl_filename->slurp_utf8, "$program\n __DATA__\nfoo\n$section", '__DATA__ at start of line');
 
+$perl_filename->spew_utf8("__DATA__\nfoo\n");
+$writer->update_file;
+eq_or_diff($perl_filename->slurp_utf8, "$section", 'JUST a data section');
+
 done_testing;

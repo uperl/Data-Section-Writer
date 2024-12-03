@@ -98,12 +98,16 @@ Will add this to the bottom of C<foo.pl>
     if(-f $self->perl_filename) {
       $perl = $self->perl_filename->slurp_utf8;
 
-      # read the file in, removing __DATA__ and everything after that
-      # if there is no __DATA__ section then leave unchanged.
-      $perl = $self->perl_filename->slurp_utf8 =~ s/(?<=\n)__DATA__.*//sr;
+      if($perl =~ /^__DATA__/) {
+        $perl = '';
+      } else {
+        # read the file in, removing __DATA__ and everything after that
+        # if there is no __DATA__ section then leave unchanged.
+        $perl =~ s/(?<=\n)__DATA__.*//s;
 
-      # Add a new line at the end if it doesn't already exist.
-      $perl .= "\n" unless $perl =~ /\n\z/s;
+        # Add a new line at the end if it doesn't already exist.
+        $perl .= "\n" unless $perl =~ /\n\z/s;
+      }
 
     } else {
       $perl = '';
