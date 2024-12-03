@@ -9,11 +9,18 @@ eval { require 'Test/More.pm' };
 my %modules;
 my $post_diag;
 
+BEGIN { eval q{ use EV; } }
 $modules{$_} = $_ for qw(
+  Capture::Tiny
   Class::Tiny
+  Data::Section::Simple
+  EV
   ExtUtils::MakeMaker
+  Mojolicious
   Path::Tiny
   Ref::Util
+  Test2::API
+  Test2::Require::Module
   Test2::V0
   Test::Differences
 );

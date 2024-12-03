@@ -55,12 +55,12 @@ package Data::Section::Writer {
     my $text = "@@ $filename";
     $text .= " (" . $data->[1] . ")" if defined $data->[1];
     $text .= "\n";
-    $DB::single = 1;
     if(defined $data->[1] && $data->[1] eq 'base64') {
       $text .= encode_base64($data->[0]);
     } else {
       $text .= $data->[0];
     }
+    chomp $text;
     return $text;
   }
 
@@ -73,7 +73,6 @@ package Data::Section::Writer {
     return "__DATA__\n" unless %$files;
     return join("\n",
       "__DATA__",
-      "",
       (map { $self->_render_file($_, $files->{$_}) } sort keys $files->%*),
       ''
     );
@@ -98,7 +97,7 @@ package Data::Section::Writer {
       $perl = '';
     }
 
-    # re-write the perl with the 
+    # re-write the perl with the
     $self->perl_filename->spew_utf8(
       $perl . $self->render_section,
     );
