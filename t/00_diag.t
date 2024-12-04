@@ -13,6 +13,7 @@ BEGIN { eval q{ use EV; } }
 $modules{$_} = $_ for qw(
   Capture::Tiny
   Class::Tiny
+  Data::Section
   Data::Section::Simple
   EV
   ExtUtils::MakeMaker
@@ -23,6 +24,7 @@ $modules{$_} = $_ for qw(
   Test2::Require::Module
   Test2::V0
   Test::Differences
+  stable
 );
 
 
