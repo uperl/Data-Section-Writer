@@ -1,6 +1,7 @@
 use warnings;
 use 5.020;
-use experimental qw( postderef signatures );
+use experimental qw( signatures );
+use stable qw( postderef );
 
 package Data::Section::Writer {
 
@@ -150,6 +151,9 @@ Update the existing Perl source file, OR create a new Perl source file with just
 Added text files will get an added trailing new line if they do not already have
 them.  This is a requirement of the format used by the data section modules.
 
-For binary files (base64 encoded) this isn't relevant.
+For binary files (base64 encoded) the content returned by L<Mojo::Loader> should
+be identical.
+
+Not tested, and probably not working on Windows, though patches for this are welcome.
 
 =cut
