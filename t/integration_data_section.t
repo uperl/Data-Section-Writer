@@ -31,7 +31,7 @@ use strict;
 use warnings;
 use stable qw( postderef );
 use Data::Section -setup => {
-  header_re => qr/^\@\@ (.*?)$/,
+  header_re => qr/^@@ (.*?)$/,
 };
 
 print __PACKAGE__->section_data($ARGV[0])->$*;

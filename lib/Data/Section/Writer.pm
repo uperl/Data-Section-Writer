@@ -25,6 +25,9 @@ This class is an interface for updating the C<__DATA__> section of your Perl mod
 for it to work with one of the many modules that allows for multiple files in a C<__DATA__> section, such as
 L<Data::Section>, L<Data::Section::Simple> or L<Mojo::Loader>.
 
+L<Data::Section> uses a different header format by default, but you can still use this module with it
+if you set C<header_re> to C<qr/^@@ (.*)$/>.
+
 =head1 ATTRIBUTES
 
 =head2 perl_filename
