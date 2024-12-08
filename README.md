@@ -38,7 +38,7 @@ hello world
 
 This class is an interface for updating the `__DATA__` section of your Perl module or script programmatically
 for it to work with one of the many modules that allows for multiple files in a `__DATA__` section, such as
-[Data::Section](https://metacpan.org/pod/Data::Section), [Data::Section::Simple](https://metacpan.org/pod/Data::Section::Simple) or [Mojo::Loader](https://metacpan.org/pod/Mojo::Loader).
+[Data::Section](https://metacpan.org/pod/Data::Section), [Data::Section::Simple](https://metacpan.org/pod/Data::Section::Simple), [Data::Section::Pluggable](https://metacpan.org/pod/Data::Section::Pluggable) or [Mojo::Loader](https://metacpan.org/pod/Mojo::Loader).
 
 [Data::Section](https://metacpan.org/pod/Data::Section) uses a different header format by default, but you can still use this module with it
 if you set `header_re` to `qr/^@@ (.*)$/`.
@@ -113,6 +113,10 @@ be identical.
 
 Not tested, and probably not working for Windows formatted text files, though
 patches for this are welcome.
+
+# SEE ALSO
+
+- [Data::Section::Pluggable](https://metacpan.org/pod/Data::Section::Pluggable)
 
 # AUTHOR
 

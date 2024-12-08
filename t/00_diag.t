@@ -14,6 +14,7 @@ $modules{$_} = $_ for qw(
   Capture::Tiny
   Class::Tiny
   Data::Section
+  Data::Section::Pluggable
   Data::Section::Simple
   EV
   ExtUtils::MakeMaker

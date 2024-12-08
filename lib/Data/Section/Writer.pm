@@ -23,7 +23,7 @@ Will add this to the bottom of C<foo.pl>
 
 This class is an interface for updating the C<__DATA__> section of your Perl module or script programmatically
 for it to work with one of the many modules that allows for multiple files in a C<__DATA__> section, such as
-L<Data::Section>, L<Data::Section::Simple> or L<Mojo::Loader>.
+L<Data::Section>, L<Data::Section::Simple>, L<Data::Section::Pluggable> or L<Mojo::Loader>.
 
 L<Data::Section> uses a different header format by default, but you can still use this module with it
 if you set C<header_re> to C<qr/^@@ (.*)$/>.
@@ -201,5 +201,13 @@ be identical.
 
 Not tested, and probably not working for Windows formatted text files, though
 patches for this are welcome.
+
+=head1 SEE ALSO
+
+=over 4
+
+=item L<Data::Section::Pluggable>
+
+=back
 
 =cut
