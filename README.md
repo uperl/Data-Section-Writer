@@ -77,6 +77,10 @@ $writer->update_file;
 
 Update the existing Perl source file, OR create a new Perl source file with just the `__DATA__` section.
 
+\[version 0.02\]
+
+Starting with version 0.02, this method will not write to the file if the content won't change.
+
 # CAVEATS
 
 Added text files will get an added trailing new line if they do not already have

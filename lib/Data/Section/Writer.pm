@@ -38,7 +38,7 @@ The name of the Perl source file.  If not provided then the source for the calle
 
   use Path::Tiny ();
   use Carp ();
-  use Class::Tiny qw( perl_filename _files );
+  use Class::Tiny qw( perl_filename _files _same );
   use Ref::Util qw( is_blessed_ref );
   use MIME::Base64 qw(encode_base64);
 
@@ -114,13 +114,18 @@ Returns the C<__DATA__> section.
 
 Update the existing Perl source file, OR create a new Perl source file with just the C<__DATA__> section.
 
+[version 0.02]
+
+Starting with version 0.02, this method will not write to the file if the content won't change.
+
 =cut
 
   sub update_file ($self) {
     my $perl;
+    my $orig;
 
     if(-f $self->perl_filename) {
-      $perl = $self->perl_filename->slurp_utf8;
+      $orig = $perl = $self->perl_filename->slurp_utf8;
 
       if($perl =~ /^__DATA__/) {
         $perl = '';
@@ -137,10 +142,17 @@ Update the existing Perl source file, OR create a new Perl source file with just
       $perl = '';
     }
 
+    $perl .= $self->render_section;
+
+    if(defined $orig && $orig eq $perl) {
+      $self->_same(1);
+      return $self;
+    } else {
+      $self->_same(0);
+    }
+
     # re-write the perl with the
-    $self->perl_filename->spew_utf8(
-      $perl . $self->render_section,
-    );
+    $self->perl_filename->spew_utf8($perl);
 
     return $self;
   }
