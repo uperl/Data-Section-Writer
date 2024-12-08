@@ -81,6 +81,28 @@ Update the existing Perl source file, OR create a new Perl source file with just
 
 Starting with version 0.02, this method will not write to the file if the content won't change.
 
+## unchanged
+
+\[version 0.02\]
+
+```perl
+my $bool = $self->unchanged;
+```
+
+Returns:
+
+- \`undef\`
+
+    If &lt;/update\_file> hasn't been called yet.
+
+- \`0\`
+
+    If the last call to &lt;/update\_file> modified the file.
+
+- \`1\`
+
+    If the last call to &lt;/update\_file> did not modify the file.
+
 # CAVEATS
 
 Added text files will get an added trailing new line if they do not already have

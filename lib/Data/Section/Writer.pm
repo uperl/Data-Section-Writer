@@ -157,6 +157,36 @@ Starting with version 0.02, this method will not write to the file if the conten
     return $self;
   }
 
+=head2 unchanged
+
+[version 0.02]
+
+ my $bool = $self->unchanged;
+
+Returns:
+
+=over 4
+
+=item `undef`
+
+If </update_file> hasn't been called yet.
+
+=item `0`
+
+If the last call to </update_file> modified the file.
+
+=item `1`
+
+If the last call to </update_file> did not modify the file.
+
+=back
+
+=cut
+
+  sub unchanged ($self) {
+      return $self->_same;
+  }
+
 }
 
 1;
