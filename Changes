@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.02      2024-12-14 18:12:23 -0700
   - Don't write file if __DATA__ hasn't changed (gh#2)
   - Added ->unchanged method (gh#2)
   - Added integration tests and documentation re: Data::Section::Pluggable (gh#3)
