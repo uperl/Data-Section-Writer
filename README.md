@@ -86,7 +86,7 @@ Starting with version 0.02, this method will not write to the file if the conten
 \[version 0.02\]
 
 ```perl
-my $bool = $self->unchanged;
+my $bool = $writer->unchanged;
 ```
 
 Returns:
@@ -102,6 +102,46 @@ Returns:
 - \`1\`
 
     If the last call to &lt;/update\_file> did not modify the file.
+
+## add\_format
+
+```perl
+$writer->add_format( $ext, sub ($writer, $content) { return ... } );
+```
+
+Adds a content formatter to the given filename extension. The extension should be a filename extension without the `.`, for example `txt` or `json`.
+
+The callback takes the [Data::Section::Writable](https://metacpan.org/pod/Data::Section::Writable) instance as its first argument and the content to be processed as the second.
+This callback should return the format content as a scalar.
+
+You can chain multiple content formatters to the same filename extension, and they will be called in the order that they were added.
+
+## add\_plugin
+
+```
+$writer->add_plugin( $name, %args );
+```
+
+Applies the plugin with `$name`. If the plugin supports instance mode (that is: it has a constructor named new), then %args will be passed to the 
+constructor. For included plugins see ["CORE PLUGINS"](#core-plugins). To write your own see ["PLUGIN ROLES"](#plugin-roles).
+
+# CORE PLUGINS
+
+This module will work with some core [Data::Section::Pluggable](https://metacpan.org/pod/Data::Section::Pluggable) plugins listed here.
+
+## json
+
+Automatically encode json into Perl data structures.
+
+See [Data::Section::Pluggable::Plugin::Json](https://metacpan.org/pod/Data::Section::Pluggable::Plugin::Json).
+
+# PLUGIN ROLES
+
+## FormatContentPlugin
+
+Used for adding content formatting for specific formats.  This
+is essentially a way to wrap the [add\_format method](#add_format)
+as a module.  See [Data::Section::Pluggable::Role::FormatContentPlugin](https://metacpan.org/pod/Data::Section::Pluggable::Role::FormatContentPlugin).
 
 # CAVEATS
 

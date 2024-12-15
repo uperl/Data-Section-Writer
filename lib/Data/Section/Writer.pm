@@ -2,6 +2,7 @@ use warnings;
 use 5.020;
 use experimental qw( signatures );
 use stable qw( postderef );
+use true;
 
 package Data::Section::Writer {
 
@@ -38,8 +39,8 @@ The name of the Perl source file.  If not provided then the source for the calle
 
   use Path::Tiny ();
   use Carp ();
-  use Class::Tiny qw( perl_filename _files _same );
-  use Ref::Util qw( is_blessed_ref );
+  use Class::Tiny qw( perl_filename _files _same _formats );
+  use Ref::Util qw( is_coderef is_blessed_ref is_plain_arrayref );
   use MIME::Base64 qw(encode_base64);
 
   sub BUILD ($self, $) {
@@ -56,6 +57,7 @@ The name of the Perl source file.  If not provided then the source for the calle
     }
 
     $self->_files({});
+    $self->_formats({});
 
   }
 
@@ -81,10 +83,18 @@ only supported by L<Mojo::Loader> at the moment.
     my $text = "@@ $filename";
     $text .= " (" . $data->[1] . ")" if defined $data->[1];
     $text .= "\n";
+
+    my $content = $data->[0];
+
+    if($filename =~ /\.(.*?)\z/ && ($self->_formats->{$1} // [])->@*) {
+        my $ext = $1;
+        $content = $_->($self, $content) for $self->_formats->{$ext}->@*;
+    }
+
     if(defined $data->[1] && $data->[1] eq 'base64') {
-      $text .= encode_base64($data->[0]);
+        $text .= encode_base64($data->[0]);
     } else {
-      $text .= $data->[0];
+        $text .= $content;
     }
     chomp $text;
     return $text;
@@ -161,7 +171,7 @@ Starting with version 0.02, this method will not write to the file if the conten
 
 [version 0.02]
 
- my $bool = $self->unchanged;
+ my $bool = $writer->unchanged;
 
 Returns:
 
@@ -187,9 +197,95 @@ If the last call to </update_file> did not modify the file.
       return $self->_same;
   }
 
+=head2 add_format
+
+ $writer->add_format( $ext, sub ($writer, $content) { return ... } );
+
+Adds a content formatter to the given filename extension. The extension should be a filename extension without the C<.>, for example C<txt> or C<json>.
+
+The callback takes the L<Data::Section::Writable> instance as its first argument and the content to be processed as the second.
+This callback should return the format content as a scalar.
+
+You can chain multiple content formatters to the same filename extension, and they will be called in the order that they were added.
+
+=cut
+
+    sub add_format ($self, $ext, $cb) {
+        Carp::croak("callback is not a code reference") unless is_coderef $cb;
+        push $self->_formats->{$ext}->@*, $cb;
+        return $self;
+    }
+
+=head2 add_plugin
+
+ $writer->add_plugin( $name, %args );
+
+Applies the plugin with C<$name>. If the plugin supports instance mode (that is: it has a constructor named new), then %args will be passed to the 
+constructor. For included plugins see L</CORE PLUGINS>. To write your own see L</PLUGIN ROLES>.
+
+=cut
+
+    sub add_plugin ($self, $name, %args) {
+        Carp::croak("plugin name must match [a-z][a-z0-9_]+, got $name")
+            unless $name =~ /^[a-z][a-z0-9_]+\z/;
+
+        my $class = join '::', 'Data', 'Section', 'Pluggable', 'Plugin', ucfirst($name =~ s/_(.)/uc($1)/egr);
+        my $pm    = ($class =~ s!::!/!gr) . ".pm";
+
+        require $pm unless $self->_valid_plugin($class);
+
+        my $plugin;
+        if($class->can("new")) {
+            $plugin = $class->new(%args);
+        } else {
+            if(%args) {
+                Carp::croak("extra arguments are not allowed for class plugins (hint create constructor)");
+            }
+            $plugin = $class;
+        }
+
+        Carp::croak("$class is not a valid Data::Section::Pluggable plugin")
+            unless $self->_valid_plugin($plugin);
+
+        if($plugin->does('Data::Section::Pluggable::Role::FormatContentPlugin')) {
+
+            my @extensions = $plugin->extensions;
+            @extensions = $extensions[0]->@* if is_plain_arrayref $extensions[0];
+
+            die "extensions method for $class returned no extensions" unless @extensions;
+
+            my $cb = sub ($self, $content) {
+                return $plugin->format_content($self, $content);
+            };
+
+            $self->add_format($_, $cb) for @extensions;
+        }
+
+        return $self;
+    }
+
+    sub _valid_plugin ($self, $plugin) {
+        $plugin->can('does') && $plugin->does('Data::Section::Pluggable::Role::FormatContentPlugin');
+    }
 }
 
-1;
+=head1 CORE PLUGINS
+
+This module will work with some core L<Data::Section::Pluggable> plugins listed here.
+
+=head2 json
+
+Automatically encode json into Perl data structures.
+
+See L<Data::Section::Pluggable::Plugin::Json>.
+
+=head1 PLUGIN ROLES
+
+=head2 FormatContentPlugin
+
+Used for adding content formatting for specific formats.  This
+is essentially a way to wrap the L<add_format method|/add_format>
+as a module.  See L<Data::Section::Pluggable::Role::FormatContentPlugin>.
 
 =head1 CAVEATS
 

@@ -21,11 +21,14 @@ $modules{$_} = $_ for qw(
   Mojolicious
   Path::Tiny
   Ref::Util
+  Role::Tiny
+  Role::Tiny::With
   Test2::API
   Test2::Require::Module
   Test2::V0
   Test::Differences
   stable
+  true
 );
 
 
