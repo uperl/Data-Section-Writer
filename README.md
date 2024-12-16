@@ -91,17 +91,17 @@ my $bool = $writer->unchanged;
 
 Returns:
 
-- \`undef\`
+- `undef`
 
-    If &lt;/update\_file> hasn't been called yet.
+    If ["update\_file"](#update_file) hasn't been called yet.
 
-- \`0\`
+- `0`
 
-    If the last call to &lt;/update\_file> modified the file.
+    If the last call to ["update\_file"](#update_file) modified the file.
 
-- \`1\`
+- `1`
 
-    If the last call to &lt;/update\_file> did not modify the file.
+    If the last call to ["update\_file"](#update_file) did not modify the file.
 
 ## add\_format
 
