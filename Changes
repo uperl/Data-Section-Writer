@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - I somehow forgot how to write POD and had to fix some (gh#5)
 
 0.03      2024-12-14 18:14:10 -0700
   - Corrected merge errors in 0.02

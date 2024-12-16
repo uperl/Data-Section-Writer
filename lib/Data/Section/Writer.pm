@@ -177,17 +177,17 @@ Returns:
 
 =over 4
 
-=item `undef`
+=item C<undef>
 
-If </update_file> hasn't been called yet.
+If L</update_file> hasn't been called yet.
 
-=item `0`
+=item C<0>
 
-If the last call to </update_file> modified the file.
+If the last call to L</update_file> modified the file.
 
-=item `1`
+=item C<1>
 
-If the last call to </update_file> did not modify the file.
+If the last call to L</update_file> did not modify the file.
 
 =back
 
