@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.05      2025-11-26 10:01:48 -0700
   - The update_file method will replace the content in an existing file
     rather than creating a new one.  A backup of the original file is
     made while the new content is being written, in the unlikely event
