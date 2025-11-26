@@ -42,6 +42,7 @@ The name of the Perl source file.  If not provided then the source for the calle
   use Class::Tiny qw( perl_filename _files _same _formats );
   use Ref::Util qw( is_coderef is_blessed_ref is_plain_arrayref );
   use MIME::Base64 qw(encode_base64);
+  use File::Temp ();
 
   sub BUILD ($self, $) {
 
@@ -161,8 +162,19 @@ Starting with version 0.02, this method will not write to the file if the conten
       $self->_same(0);
     }
 
-    # re-write the perl with the
-    $self->perl_filename->spew_utf8($perl);
+    if(-f $self->perl_filename) {
+      use autodie qw( truncate close );
+      # re-write the perl to the file, using the existing inode
+      my $backup = Path::Tiny->new(File::Temp::tempnam($self->perl_filename->parent, $self->perl_filename->basename));
+      $self->perl_filename->copy($backup) if -f $self->perl_filename;
+      my $fh = $self->perl_filename->openrw_utf8;
+      truncate $fh, 0;
+      print $fh $perl or die "unable to write to @{[ $self->perl_filename ]} $!";
+      close $fh;
+      $backup->remove if -f $backup;
+    } else {
+      $self->perl_filename->spew_utf8($perl);
+    }
 
     return $self;
   }
